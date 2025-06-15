@@ -149,7 +149,7 @@ export const ServicesSection = () => {
                 data-index={index}
                 className={`
                   service-card cursor-pointer transition-all duration-700 transform hover:-translate-y-3 hover:shadow-2xl
-                  ${isActive ? 'ring-2 ring-blue-500 shadow-lg scale-105' : ''}
+                  ${isActive ? 'shadow-lg scale-105' : ''} /* Removed ring-2 ring-blue-500 */
                   ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}
                   border-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm
                 `}
