@@ -1,8 +1,8 @@
-
 import React, { useEffect, useState, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Award, Users, Clock, Star, Sparkles, Zap, TrendingUp, Target } from 'lucide-react';
+
 
 const stats = [
   {
@@ -91,7 +91,7 @@ export const AboutSection = () => {
           stats.forEach((stat, index) => {
             setTimeout(() => {
               const target = stat.number;
-              const increment = target / 100;
+              const increment = target / 100; 
               let current = 0;
               
               const timer = setInterval(() => {
@@ -106,8 +106,8 @@ export const AboutSection = () => {
                   newCounters[index] = current;
                   return newCounters;
                 });
-              }, 20);
-            }, index * 200);
+              }, 20); 
+            }, index * 200); 
           });
         }
       },
@@ -212,7 +212,8 @@ export const AboutSection = () => {
           
           <div className="relative">
             {/* Enhanced Timeline Line */}
-            <div className="absolute left-1/2 transform -translate-x-0.5 h-full w-1 bg-gradient-to-b from-blue-500 via-purple-500 to-cyan-500 rounded-full opacity-60"></div>
+            {/* On mobile, line is on the left. On medium screens and up, it's centered. */}
+            <div className="absolute left-4 md:left-1/2 transform md:-translate-x-0.5 h-full w-1 bg-gradient-to-b from-blue-500 via-purple-500 to-cyan-500 rounded-full opacity-60"></div>
             
             {timeline.map((item, index) => {
               const IconComponent = item.icon;
@@ -224,15 +225,41 @@ export const AboutSection = () => {
                   data-timeline-index={index}
                   className={`
                     timeline-item relative flex items-center mb-16 transition-all duration-800
-                    ${index % 2 === 0 ? 'justify-start' : 'justify-end'}
+                    flex-col md:flex-row /* Stack vertically on small, row on md+ */
+                    ${index % 2 === 0 ? 'md:justify-start' : 'md:justify-end'} /* Alternating on md+ */
                     ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}
                   `}
                   style={{ transitionDelay: `${index * 200}ms` }}
                 >
-                  <div className={`w-1/2 ${index % 2 === 0 ? 'pr-12 text-right' : 'pl-12 text-left'}`}>
+                  {/* Timeline Dot (always left of card on mobile, centered on desktop line) */}
+                  <div className={`
+                    absolute z-10 
+                    top-0 -translate-y-1/2 /* Position at the top of the card for mobile stacking */
+                    left-4 /* Aligned with the main line on mobile */
+                    md:top-1/2 md:-translate-y-1/2 /* Vertically center for desktop */
+                    md:left-1/2 md:-translate-x-1/2 /* Centered on the line for desktop */
+                  `}>
+                    <div className={`
+                      w-6 h-6 bg-gradient-to-r ${item.color} rounded-full border-4 border-background 
+                      shadow-xl transition-all duration-500 hover:scale-125
+                      ${isVisible ? 'animate-pulse' : ''}
+                    `}></div>
+                  </div>
+
+                  {/* Timeline Card Wrapper */}
+                  <div className={`
+                    w-full /* Full width on mobile */
+                    md:w-1/2 /* Half width on md+ */
+                    pl-12 pr-4 text-left /* Default padding and text alignment for mobile (left-aligned relative to timeline line) */
+                    ${index % 2 === 0 ? 'md:pr-12 md:text-right' : 'md:pl-12 md:text-left'} /* Adjust padding and text alignment for md+ */
+                  `}>
                     <Card className="hover:shadow-xl transition-all duration-500 border-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm hover:scale-105">
                       <CardContent className="p-6">
-                        <div className="flex items-center gap-4 mb-4">
+                        <div className={`
+                            flex items-center gap-4 mb-4 
+                            justify-start /* Always align left on mobile */
+                            ${index % 2 === 0 ? 'md:justify-end' : 'md:justify-start'} /* Align icon/badge right for left cards on md+ */
+                        `}>
                           <div className={`
                             w-12 h-12 rounded-xl bg-gradient-to-r ${item.color} 
                             flex items-center justify-center transition-transform duration-500 hover:rotate-12
@@ -250,23 +277,25 @@ export const AboutSection = () => {
                     </Card>
                   </div>
                   
-                  {/* Enhanced Timeline Dot */}
-                  <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
-                    <div className={`
-                      w-6 h-6 bg-gradient-to-r ${item.color} rounded-full border-4 border-background 
-                      shadow-xl transition-all duration-500 hover:scale-125
-                      ${isVisible ? 'animate-pulse' : ''}
-                    `}></div>
-                  </div>
-                  
-                  {/* Enhanced connecting line */}
+                  {/* Horizontal Connecting Line (desktop only) */}
                   <div className={`
-                    absolute ${index % 2 === 0 ? 'right-1/2 mr-6' : 'left-1/2 ml-6'} 
-                    top-1/2 w-6 h-1 bg-gradient-to-r ${item.color} rounded-full
+                    absolute h-1 bg-gradient-to-r ${item.color} rounded-full z-0
+                    top-1/2 -translate-y-1/2 /* Vertically center */
+                    w-6 /* Fixed width for desktop */
+                    ${index % 2 === 0 ? 'md:right-1/2 md:mr-6' : 'md:left-1/2 md:ml-6'} /* Desktop alternating positions */
+                    hidden md:block /* Hide on mobile, show on md+ */
                     transition-all duration-500 ${isVisible ? 'scale-x-100' : 'scale-x-0'}
-                  `}
-                  style={{ transitionDelay: `${index * 200 + 300}ms` }}
-                  ></div>
+                  `}></div>
+
+                  {/* Horizontal Connecting Line (mobile only) */}
+                  <div className={`
+                    absolute h-1 bg-gradient-to-r ${item.color} rounded-full z-0
+                    top-0 -translate-y-1/2 /* Position to visually connect dot to card */
+                    left-[1.75rem] /* Start just after the dot, adjusted for 12px dot width (6px radius + 4px border = 10px from center. 4px line + 1.25 rem from left for card = 1.75 rem) */
+                    w-[calc(100%-4rem)] /* Extend to cover content width, adjust as needed */
+                    block md:hidden /* Show on mobile, hide on md+ */
+                    transition-all duration-500 ${isVisible ? 'scale-x-100' : 'scale-x-0'}
+                  `}></div>
                 </div>
               );
             })}
